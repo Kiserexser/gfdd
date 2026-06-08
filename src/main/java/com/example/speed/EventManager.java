@@ -18,7 +18,7 @@ public class EventManager {
         if (!enabled) {
             ticks = 0;
             groundTicks = 0;
-            TimerManager.setTimer(1.0F);
+            // TimerManager.setTimer(1.0F); // УДАЛЕНО
         }
     }
 
@@ -30,11 +30,11 @@ public class EventManager {
     public static void incGroundTicks() { groundTicks++; }
 
     // -----------------------------------------------------------------
-    // Логика обходов (твой код, но без SpeedModule)
+    // Логика обходов (без таймера)
     // -----------------------------------------------------------------
     public static void onMovePost(EventOnMovePost e) {
         if (!enabled) return;
-        TimerManager.setTimer(1.7F);
+        // TimerManager.setTimer(1.7F); // УДАЛЕНО
         if (ticks > 3) {
             double bst = 0.03;
             if (ticks % 2 == 0) {
@@ -66,7 +66,7 @@ public class EventManager {
     public static void onPostMotion(EventPostMotion e) {
         if (!enabled) return;
         if ((ticks % 2) == 0) {
-            TimerManager.setTimer(0.3F);
+            // TimerManager.setTimer(0.3F); // УДАЛЕНО
             if (mc.player != null) {
                 NetworkUtils.sendSilentPacket(new net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket(mc.player, net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket.Mode.START_FALL_FLYING));
             }
@@ -79,7 +79,7 @@ public class EventManager {
             if ((ticks % 2) == 1) {
                 ticks++;
             }
-            TimerManager.setTimer(1.0F);
+            // TimerManager.setTimer(1.0F); // УДАЛЕНО
         }
     }
 }
