@@ -8,9 +8,32 @@ import net.minecraft.util.math.Vec3d;
 public class EventManager {
     private static MinecraftClient mc = MinecraftClient.getInstance();
 
+    // Состояние модуля
+    private static boolean enabled = false;
+    private static int ticks = 0;
+    private static int groundTicks = 0;
+
+    public static void setEnabled(boolean e) {
+        enabled = e;
+        if (!enabled) {
+            ticks = 0;
+            groundTicks = 0;
+            TimerManager.setTimer(1.0F);
+        }
+    }
+
+    public static boolean isEnabled() { return enabled; }
+    public static int getTicks() { return ticks; }
+    public static void incTicks() { ticks++; }
+    public static int getGroundTicks() { return groundTicks; }
+    public static void setGroundTicks(int v) { groundTicks = v; }
+    public static void incGroundTicks() { groundTicks++; }
+
+    // -----------------------------------------------------------------
+    // Логика обходов (твой код, но без SpeedModule)
+    // -----------------------------------------------------------------
     public static void onMovePost(EventOnMovePost e) {
-        if (!SpeedModule.isEnabled()) return;   // если у тебя класс называется SpeedMod, замени на SpeedMod.isEnabled()
-        int ticks = SpeedModule.ticks;
+        if (!enabled) return;
         TimerManager.setTimer(1.7F);
         if (ticks > 3) {
             double bst = 0.03;
@@ -29,20 +52,20 @@ public class EventManager {
                 mc.player.addVelocityInternal(new Vec3d(xt * bst, 0, zt * bst));
             }
         }
-        SpeedModule.ticks++;
+        ticks++;
     }
 
     public static void onMoveInput(EventMoveInput e) {
-        if (!SpeedModule.isEnabled()) return;
+        if (!enabled) return;
         if (mc.player == null) return;
-        if (mc.player.verticalCollision) SpeedModule.groundTicks++;
-        else SpeedModule.groundTicks = 0;
-        if (SpeedModule.groundTicks >= 1) mc.player.jump();
+        if (mc.player.verticalCollision) groundTicks++;
+        else groundTicks = 0;
+        if (groundTicks >= 1) mc.player.jump();
     }
 
     public static void onPostMotion(EventPostMotion e) {
-        if (!SpeedModule.isEnabled()) return;
-        if ((SpeedModule.ticks % 2) == 0) {
+        if (!enabled) return;
+        if ((ticks % 2) == 0) {
             TimerManager.setTimer(0.3F);
             if (mc.player != null) {
                 NetworkUtils.sendSilentPacket(new net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket(mc.player, net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket.Mode.START_FALL_FLYING));
@@ -51,10 +74,10 @@ public class EventManager {
     }
 
     public static void onPacket(EventPacket e) {
-        if (!SpeedModule.isEnabled()) return;
+        if (!enabled) return;
         if (e.getPacket() instanceof PlayerPositionLookS2CPacket) {
-            if ((SpeedModule.ticks % 2) == 1) {
-                SpeedModule.ticks++;
+            if ((ticks % 2) == 1) {
+                ticks++;
             }
             TimerManager.setTimer(1.0F);
         }
