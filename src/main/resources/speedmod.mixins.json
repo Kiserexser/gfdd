@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.example.speed.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MixinLivingEntity",
+    "MixinTimer",
+    "MixinClientConnection",
+    "MixinMinecraftClient"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
